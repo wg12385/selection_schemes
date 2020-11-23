@@ -17,19 +17,17 @@ def add_IMP_to_df(atom_df, pair_df, model_dir):
 
     mol_df, graphs = graph_in.make_graph_df(atom_df, pair_df)
     
-    for target in ['HCS', 'CCS']:
-    
-        print('Predicting: ', target)
-    
-        modelfile = model_dir + target + '_model.torch'
-        
-        model = GTNmodel()
-        model.load_model(modelfile)
-        
-        test_loader = model.get_input(graphs, mol_df)
-        graphs_out = model.predict(test_loader)
+    print('Making predictions:')
 
-        atom_df, pair_df = model.assign_preds(graphs_out, mol_df, atom_df, pair_df, assign_to="")
+    modelfile = model_dir + 'all_model.torch'
+    
+    model = GTNmodel()
+    model.load_model(modelfile)
+    model.params['batch_size'] = 4
+    test_loader = model.get_input(graphs, mol_df)
+    graphs_out = model.predict(test_loader, progress=True)
+
+    atom_df, pair_df = model.assign_preds(graphs_out, mol_df, atom_df, pair_df, assign_to="", progress=True)
 
     return atom_df, pair_df
 
