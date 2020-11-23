@@ -1,7 +1,6 @@
 # Size based selection_schemes
 
 import numpy as np
-import mol_translator.imp_converter.dataframe_read as df_read
 
 from rdkit import DataStructs
 
