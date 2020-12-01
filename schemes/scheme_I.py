@@ -19,7 +19,7 @@ def get_FEPs(atom_df, prev_chosen):
     return molnames, np.array(feps)
 
 # Get FEP values for all molecules not already picked
-def get_FEP_varss(atom_df, prev_chosen):
+def get_FEP_vars(atom_df, prev_chosen):
     molnames = []
     feps = []
     for molname in atom_df.molecule_name.unique():
@@ -126,6 +126,7 @@ def select_molecules_I5(mol_df, atom_df, pair_df, prev_chosen=[], num=3):
     return chosen_mols
     
 # Return the molecules with the lowest predicted FEP variance
+# Relies on FEP_variance values
 def select_molecules_I6(mol_df, atom_df, pair_df, prev_chosen=[], num=3):
     
     molnames, feps = get_FEP_vars(atom_df, prev_chosen)
@@ -138,6 +139,7 @@ def select_molecules_I6(mol_df, atom_df, pair_df, prev_chosen=[], num=3):
     return chosen_mols
     
 # Return the molecules with the lowest predicted FEP variance
+# Relies on FEP_variance values
 def select_molecules_I7(mol_df, atom_df, pair_df, prev_chosen=[], num=3):
     
     molnames, feps = get_FEP_vars(atom_df, prev_chosen)

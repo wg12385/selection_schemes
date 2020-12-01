@@ -48,6 +48,16 @@ def add_randomised_FEPs(atom_df):
         atom_df.loc[atom_df.molecule_name == molname, 'predicted_ic50'] = np.random.rand()
     
     return atom_df
+    
+def add_randomised_FEP_vars(atom_df):
+    
+    if 'predicted_ic50_var' not in atom_df.keys():
+        atom_df['predicted_ic50_var'] = np.zeros(len(atom_df), dtype=np.float64)
+
+    for molname in atom_df.molecule_name.unique():
+        atom_df.loc[atom_df.molecule_name == molname, 'predicted_ic50_var'] = np.random.rand()
+    
+    return atom_df
 
 # I1 is picking the molecules with the lowest FEP predictions
 def test_scheme_I1():
@@ -195,6 +205,72 @@ def test_scheme_I5():
         
         counter += 1
         chosen = select_molecules_I5(mol_df, atom_df, pair_df, prev_chosen=chosen, num=num)
+        train_graphs, train_mol_df, test_graphs, test_mol_df = get_split(chosen, mol_df, graphs)
+
+
+        assert len(train_graphs) == num * counter, print(len(train_graphs), num, counter)
+        assert len(test_graphs) == total - (num * counter)
+        assert len(train_mol_df.molecule_name.unique()) == len(train_mol_df.molecule_name)
+        assert len(test_mol_df.molecule_name.unique()) == len(test_mol_df.molecule_name)
+        assert counter < total/num
+        
+        for molname in train_mol_df.molecule_name.unique():
+            assert not molname in test_mol_df.molecule_name.unique()
+    assert counter == 2
+    assert len(chosen) == len(graphs) - len(graphs)%3
+    
+# I6 is highest FEP variance values
+def test_scheme_I6():
+
+    num = 3
+
+    atom_df = pd.read_pickle('tests/test_mols/atoms.pkl')
+    pair_df = pd.read_pickle('tests/test_mols/pairs.pkl')
+    mol_df, graphs = graphin.make_graph_df(atom_df, pair_df)
+
+    total = len(graphs)
+    counter = 0
+    chosen = []
+    while len(chosen) < len(graphs) - num:
+        
+        atom_df = add_randomised_FEPs(atom_df)
+        atom_df = add_randomised_FEP_vars(atom_df)
+        
+        counter += 1
+        chosen = select_molecules_I6(mol_df, atom_df, pair_df, prev_chosen=chosen, num=num)
+        train_graphs, train_mol_df, test_graphs, test_mol_df = get_split(chosen, mol_df, graphs)
+
+
+        assert len(train_graphs) == num * counter, print(len(train_graphs), num, counter)
+        assert len(test_graphs) == total - (num * counter)
+        assert len(train_mol_df.molecule_name.unique()) == len(train_mol_df.molecule_name)
+        assert len(test_mol_df.molecule_name.unique()) == len(test_mol_df.molecule_name)
+        assert counter < total/num
+        
+        for molname in train_mol_df.molecule_name.unique():
+            assert not molname in test_mol_df.molecule_name.unique()
+    assert counter == 2
+    assert len(chosen) == len(graphs) - len(graphs)%3
+    
+# I7 is highest FEP variance values
+def test_scheme_I7():
+
+    num = 3
+
+    atom_df = pd.read_pickle('tests/test_mols/atoms.pkl')
+    pair_df = pd.read_pickle('tests/test_mols/pairs.pkl')
+    mol_df, graphs = graphin.make_graph_df(atom_df, pair_df)
+
+    total = len(graphs)
+    counter = 0
+    chosen = []
+    while len(chosen) < len(graphs) - num:
+        
+        atom_df = add_randomised_FEPs(atom_df)
+        atom_df = add_randomised_FEP_vars(atom_df)
+        
+        counter += 1
+        chosen = select_molecules_I7(mol_df, atom_df, pair_df, prev_chosen=chosen, num=num)
         train_graphs, train_mol_df, test_graphs, test_mol_df = get_split(chosen, mol_df, graphs)
 
 
